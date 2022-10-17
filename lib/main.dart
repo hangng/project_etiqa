@@ -275,7 +275,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                           .delete();
 
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('You have successfully deleted a product')));
+                          content: Text('You have successfully deleted a product ')));
                       Navigator.pop(context, 'OK');
                     }),
               ],
