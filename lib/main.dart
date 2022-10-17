@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:maybank_etiqa/FirebaseFirestore.dart';
 import '../objects/dataObj.dart';
 import 'create_item.dart';
 import 'package:intl/intl.dart';
@@ -24,9 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeData(),
         home: FutureBuilder(
           future: _fbApp,
           builder: (BuildContext context, AsyncSnapshot<FirebaseApp> snapshot) {
@@ -53,14 +52,13 @@ class ItemInfoLst extends StatefulWidget {
 class ItemInfoLstState extends State<ItemInfoLst> {
   List<IDataObj> dataLst = <IDataObj>[];
   late Timer time;
+  final CollectionReference _user =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
     super.initState();
     // Timer.periodic(Duration(seconds: 1), (timer) {
-    //   setState((){
-    //     print('checking time ${DateTime.now().second}');
-    //   });
     //
     // });
   }
@@ -69,139 +67,73 @@ class ItemInfoLstState extends State<ItemInfoLst> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.amberAccent,
-            title: Text(
-              'To-Do-List',
-              style: TextStyle(color: Colors.black),
-            ),
+        appBar: AppBar(
+          backgroundColor: Colors.yellow,
+          title: Text(
+            'To-Do-List',
+            style: TextStyle(color: Colors.black),
           ),
-          body: Center(
-            child: StreamBuilder<List<IDataObj>>(
-              // tell db return what kind of obj data
-              stream: readUsers(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  print('Firebase Error !! ${snapshot.error.toString()}');
-                  return Text('Firebase Somethine went wrong!!');
-                } else if (snapshot.hasData) {
-                  // access all user data from here
-                  final users = snapshot.data!;
-                  // call list once only
-                  // get doc id
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .get()
-                      .then((value) {
-                    setState(() {
-                      if (dataLst.isEmpty) {
-                        for (var i = 0; i < users.length; i++) {
-                          dataLst.add(IDataObj(
-                              sTitle: users.elementAt(i).sTitle,
-                              sStartDate: users.elementAt(i).sStartDate,
-                              sEndDate: users.elementAt(i).sEndDate,
-                              sTime: users.elementAt(i).sTime,
-                              sStatus: users.elementAt(i).sStatus,
-                              sFbDocId: value.docs.elementAt(i).id,
-                              sRawStDate: users.elementAt(i).sRawStDate,
-                              sRawEdDate: users.elementAt(i).sRawEdDate,
-                              bComplete: users.elementAt(i).bComplete));
-                          // print('checking ${value.docs.elementAt(i).id}');
-                        }
-                      }
-                    });
-                  });
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: dataLst.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        child: Center(
-                            child: ItemInfoCard(
-                                sTitle: dataLst[index].sTitle,
-                                sStartDate: dataLst[index].sStartDate,
-                                sEndDate: dataLst[index].sEndDate,
-                                sTime: dataLst[index].sTime,
-                                sStatus: dataLst[index].sStatus,
-                                sFbDocId: dataLst[index].sFbDocId,
-                                sRwStDate: dataLst[index].sRawStDate,
-                                sRwEdDate: dataLst[index].sRawEdDate,
-                                bComplete: dataLst[index].bComplete)),
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Flexible(
+              child: Container(
+                color: Colors.grey[250],
+                child: StreamBuilder(
+                  // tell db return what kind of obj data
+                  stream: _user.snapshots(),
+                  builder:
+                      (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                    if (streamSnapshot.hasData) {
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: streamSnapshot.data!.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final DocumentSnapshot dsData =
+                              streamSnapshot.data!.docs[index];
+                          return Container(
+                              child: Center(
+                                  child: ItemInfoCard(
+                                      sTitle: dsData['title'],
+                                      sStartDate: dsData['stDate'],
+                                      sEndDate: dsData['edDate'],
+                                      sTime: dsData['time'],
+                                      sFbDocId: dsData.id,
+                                      sRwStDate: dsData['rawStDate'],
+                                      sRwEdDate: dsData['rawEdDate'],
+                                      bComplete: dsData['complete'])));
+                        },
                       );
-                    },
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ),
-          floatingActionButton: Container(
-              child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              FloatingActionButton(
-                onPressed: () {
-                  _navigateAndDisplaySelection(context);
-                },
-                tooltip: 'Increment',
-                child: const Icon(Icons.add),
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
               ),
-            ],
-          ))
-
-          // This trailing comma makes auto-formatting nicer for build methods.
-          ),
+            ),
+            Container(
+              child: Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: Container(
+                  child: FloatingActionButton(
+                    backgroundColor: Colors.deepOrange,
+                    onPressed: () {
+                      _navigateAndDisplaySelection(context);
+                    },
+                    tooltip: 'Increment',
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
-  Widget buildUser(IDataObj user) {
-    List<IDataObj> datas = <IDataObj>[];
-
-    FirebaseFirestore.instance.collection('users').get().then((value) {
-      value.docs.forEach((element) {
-        datas.add(IDataObj(
-            sTitle: user.sTitle,
-            sStartDate: user.sStartDate,
-            sEndDate: user.sEndDate,
-            sTime: user.sTime,
-            sStatus: user.sTitle,
-            sFbDocId: element.id,
-            bComplete: user.bComplete));
-        print(element.id);
-      });
-    });
-
-    print('checking list size = ${user.sTitle}');
-
-    return Container(
-        child: ItemInfoCard(
-            sTitle: user.sTitle,
-            sStartDate: user.sStartDate,
-            sEndDate: user.sEndDate,
-            sTime: user.sTime,
-            sStatus: user.sTitle,
-            sRwStDate: user.sRawStDate,
-            sRwEdDate: user.sRawEdDate,
-            sFbDocId: "",
-            bComplete: user.bComplete));
-  }
-
-  // Widget buildUserOri(IDataObj user) =>
-  //     Container(
-  //     child: ItemInfoCard(
-  //         sTitle:user.sTitle,
-  //         sStartDate: user.sStartDate,
-  //         sEndDate: user.sEndDate,
-  //         sTime: user.sTitle,
-  //         sStatus:user.sTitle,
-  //         bComplete: user.bComplete),
-  // );
 
   Stream<List<IDataObj>> readUsers() => FirebaseFirestore.instance
       .collection('users')
@@ -213,7 +145,7 @@ class ItemInfoLstState extends State<ItemInfoLst> {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
 
-    final IDataObj result = await Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => CreateItem(
@@ -221,45 +153,26 @@ class ItemInfoLstState extends State<ItemInfoLst> {
                 sStartDate: "",
                 sEndDate: "",
                 sTime: "",
-                sStatus: "",
                 bIsEdit: false,
                 sFbDocId: "",
                 sRwStDate: "",
                 sRwEdDate: "",
               )),
     );
-    print('checking refresh list  = ${result}');
+
     // When a BuildContext is used from a StatefulWidget, the mounted property
     // must be checked after an asynchronous gap.
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('checking refresh list')));
     setState(() {
-      dataLst.add(IDataObj(
-          sTitle: " ${result.sTitle}",
-          sStartDate: result.sStartDate,
-          sEndDate: result.sEndDate,
-          sTime: result.sTime,
-          sStatus: result.sStatus,
-          bComplete: result.bComplete));
-
-      // MyApp();
+      print('checking refresh list  = ${result}');
     });
     // //
   }
 }
 
 class ItemInfoCard extends StatefulWidget {
-  var sTitle,
-      sStartDate,
-      sEndDate,
-      sTime,
-      sStatus,
-      sFbDocId,
-      sRwStDate,
-      sRwEdDate;
+  var sTitle, sStartDate, sEndDate, sTime, sFbDocId, sRwStDate, sRwEdDate;
   bool bComplete = false;
 
   ItemInfoCard(
@@ -268,7 +181,6 @@ class ItemInfoCard extends StatefulWidget {
       required this.sStartDate,
       required this.sEndDate,
       required this.sTime,
-      required this.sStatus,
       required this.sFbDocId,
       required this.bComplete,
       required this.sRwEdDate,
@@ -280,6 +192,8 @@ class ItemInfoCard extends StatefulWidget {
 }
 
 class ItemInfoCardState extends State<ItemInfoCard> {
+  bool isChecked = false;
+
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.pressed,
@@ -292,7 +206,50 @@ class ItemInfoCardState extends State<ItemInfoCard> {
     return Colors.black;
   }
 
-  bool isChecked = false;
+  @override
+  void initState() {
+    super.initState();
+    // Timer.periodic(Duration(seconds: 1), (timer) {
+    //   setState((){
+    //     print('checking time ${DateTime.now().second}');
+    //   });
+    //
+    // });
+
+    isChecked = widget.bComplete;
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateItem(
+          sTitle: widget.sTitle,
+          sStartDate: widget.sStartDate,
+          sEndDate: widget.sEndDate,
+          sTime: widget.sTime,
+          bIsEdit: true,
+          // inform page is update
+          sRwStDate: widget.sRwStDate,
+          sRwEdDate: widget.sRwEdDate,
+          sFbDocId: widget.sFbDocId,
+        ),
+      ),
+    );
+
+    // When a BuildContext is used from a StatefulWidget, the mounted property
+    // must be checked after an asynchronous gap.
+    if (!mounted) return;
+
+    setState(() {
+      print('checking refresh list  = ${result}');
+      // FirebaseStoreLoadData();
+    });
+    // //
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -316,9 +273,10 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                           .collection('users')
                           .doc(widget.sFbDocId)
                           .delete();
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('You have successfully deleted a product')));
                       Navigator.pop(context, 'OK');
-
-
                     }),
               ],
             ),
@@ -326,22 +284,16 @@ class ItemInfoCardState extends State<ItemInfoCard> {
         });
       },
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CreateItem(
-              sTitle: widget.sTitle,
-              sStartDate: widget.sStartDate,
-              sEndDate: widget.sEndDate,
-              sTime: widget.sTime,
-              sStatus: widget.sStatus,
-              bIsEdit: true,
-              sRwStDate: widget.sRwStDate,
-              sRwEdDate: widget.sRwEdDate,
-              sFbDocId: widget.sFbDocId,
-            ),
-          ),
-        );
+        print('checking sTitle ${widget.sTitle}');
+        print('checking sStartDate ${widget.sStartDate}');
+        print('checking sEndDate ${widget.sEndDate}');
+        print('checking sTime ${widget.sTime}');
+        print('checking bComplete ${widget.bComplete}');
+        print('checking sRwStDate ${widget.sRwStDate}');
+        print('checking sRwEdDate ${widget.sRwEdDate}');
+        print('checking sFbDocId ${widget.sFbDocId}');
+
+        _navigateAndDisplaySelection(context);
       },
       child: Card(
         margin: EdgeInsets.all(15),
@@ -428,7 +380,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
             Container(
               padding: EdgeInsets.only(left: 20),
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.grey,
                 borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(10.0),
                     bottomLeft: Radius.circular(10.0)),
@@ -447,8 +399,15 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 10),
-                        child:
-                            isChecked ? Text('Completed') : Text('Incomplete '),
+                        child: isChecked
+                            ? Text(
+                                'Completed',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )
+                            : Text(
+                                'Incomplete',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                       ),
                     ],
                   ),
@@ -471,6 +430,8 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                                 .collection('users')
                                 .doc(widget.sFbDocId)
                                 .update({"complete": value});
+
+                            print('id ===== ${widget.sFbDocId}');
 
                             setState(() {
                               isChecked = value!;

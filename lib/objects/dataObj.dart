@@ -43,7 +43,6 @@ class IDataObj {
         'stDate': sStartDate,
         'edDate': sEndDate,
         'time': sTime,
-        'status': sStatus,
         'complete': bComplete,
         'rawStDate': sRawStDate,
         'rawEdDate': sRawEdDate,
@@ -54,9 +53,8 @@ class IDataObj {
         sStartDate: json['stDate'],
         sEndDate: json['edDate'],
         sTime: json['time'],
-        sStatus: json['title'],
         sRawStDate: json['rawStDate'],
         sRawEdDate: json['rawEdDate'],
-        bComplete: true,
+        bComplete: json['complete'],
       );
 }

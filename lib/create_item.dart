@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:maybank_etiqa/main.dart';
-import 'package:maybank_etiqa/objects/timeData.dart';
 import '../objects/dataObj.dart';
-import '../objects/timeData.dart';
 import 'package:intl/intl.dart';
 
 class CreateItem extends StatefulWidget {
@@ -11,7 +8,6 @@ class CreateItem extends StatefulWidget {
       sStartDate = "",
       sEndDate = "",
       sTime = "",
-      sStatus = "",
       sFbDocId = "",
       sRwStDate = "",
       sRwEdDate = "";
@@ -25,7 +21,6 @@ class CreateItem extends StatefulWidget {
     required this.sStartDate,
     required this.sEndDate,
     required this.sTime,
-    required this.sStatus,
     required this.bIsEdit,
     required this.sFbDocId,
     required this.sRwStDate,
@@ -86,153 +81,264 @@ class CreateItemState extends State<CreateItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('To Do List'), // Testing
-      ),
-      body: Container(
-        padding: EdgeInsets.all(50),
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: viewportConstraints.maxHeight,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Wrap(
-                      children: [
-                        Container(
-                          child: Text('TO DO List'),
+        appBar: AppBar(
+          backgroundColor: Colors.yellow,
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+          title: Text('To Do List'), // Testing
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Flexible(
+              child:
+              ListView(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    padding: EdgeInsets.only(top: 30, left: 30, right: 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Wrap(
+                          children: [
+                            Container(
+                              child: Text('TO DO List'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    Wrap(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          constraints: BoxConstraints(
-                              minHeight: 200,
-                              minWidth: double.infinity,
-                              maxHeight: 400),
-                          padding: EdgeInsets.all(10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.blueAccent)),
-                          child: widget.bIsEdit
-                              ? TextField(
-                                  controller: contTitle,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: new InputDecoration.collapsed(
-                                      hintText: 'is edit'),
-                                )
-                              : TextField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  decoration: new InputDecoration.collapsed(
-                                      hintText: 'Please Enter Todo List'),
-                                  controller: contTitle,
+                        Flexible(
+                          flex: 5,
+                          child: Wrap(
+                            children: [
+                              Container(
+                                constraints: BoxConstraints(
+                                  minHeight: 200,
                                 ),
+                                margin: EdgeInsets.only(top: 10),
+                                padding: EdgeInsets.only(
+                                    top: 10, left: 10, right: 10, bottom: 10),
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: Colors.blueAccent)),
+                                child: widget.bIsEdit
+                                    ? TextField(
+                                        controller: contTitle,
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: null,
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText: 'is edit'),
+                                      )
+                                    : TextField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: null,
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText:
+                                                    'Please Enter Todo List'),
+                                        controller: contTitle,
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Wrap(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 30),
+                                child: Text('Start Date'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.only(top: 10),
+                            width: MediaQuery.of(context).size.width,
+                            child: StartDate(
+                              customFeature: startDate,
+                              isEdit: widget.bIsEdit,
+                              sRwDate: widget.sRwStDate,
+                              sDisplayDate: widget.sStartDate,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: Wrap(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 30),
+                                child: Text('End Date'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 10),
+                            width: MediaQuery.of(context).size.width,
+                            child: EndDate(
+                              customFeature: endDate,
+                              isEdit: widget.bIsEdit,
+                              sStartYear: _yearOnly,
+                              sDisplayDate: widget.sEndDate,
+                              sRawDate: widget.sRwEdDate,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    Wrap(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 30),
-                          child: Text('Start Date'),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      width: MediaQuery.of(context).size.width,
-                      child: StartDate(
-                        customFeature: startDate,
-                        isEdit: widget.bIsEdit,
-                        sRwDate: widget.sRwStDate,
-                        sDisplayDate: widget.sStartDate,
-                      ),
-                    ),
-                    Wrap(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 30),
-                          child: Text('End Date'),
-                        ),
-                      ],
-                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              child: Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: Container(
+                  color: Colors.black,
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.black),
+                    child: widget.bIsEdit ? Text('Edit') : Text('Create Now'),
+                    onPressed: () {
+                      widget.sTitle = contTitle.text.toString();
+                      // Close the screen and return "Nope." as the result.
 
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      width: MediaQuery.of(context).size.width,
-                      child: EndDate(
-                        customFeature: endDate,
-                        isEdit: widget.bIsEdit,
-                        sStartYear: _yearOnly,
-                        sDisplayDate: widget.sEndDate,
-                        sRawDate: widget.sRwEdDate,
-                      ),
-                    ),
-                    // Wrap(
-                    //   children: [
-                    Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            widget.sTitle = contTitle.text.toString();
-                            // Close the screen and return "Nope." as the result.
-
-                            DateTime dtTime = DateTime.now();
-                            var receiveDate =
-                                DateFormat('hh:mm ').format(dtTime).toString();
-
-                            print('current time ${receiveDate}');
-                            setState(() {
-                              sFbDocId = widget.sFbDocId;
-
-                              createUser(
-                                  sTitle: contTitle.text,
-                                  sStDate: sStartDate,
-                                  sEdDate: sEndDate,
-                                  sTime: receiveDate,
-                                  sStatus: sStartDate,
-                                  sFbDocId: sFbDocId,
-                                  sRawStDate: sRwStDate,
-                                  sRawEdDate: sRwEdDate,
-                                  isComplete: false);
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MyApp(),
+                      if (widget.bIsEdit) {
+                        if (contTitle.text.isEmpty) {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Empty List Alert'),
+                              content: const Text('Please enter To Do List'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
                                 ),
-                              );
+                                TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(context, 'OK');
+                                    }),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+                      } else {
+                        if (contTitle.text.isEmpty) {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Empty List Alert'),
+                              content: const Text('Please enter To Do List'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(context, 'OK');
+                                    }),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+                      }
 
-                              // Navigator.pop(
-                              //   context,
-                              // );
-                            });
-                          },
-                          child: const Text('Nope.'),
-                        ),
-                      ),
-                    ),
-                    // ],
-                    // ),
-                  ],
+                      DateTime dtTime = DateTime.now();
+                      var receiveDate =
+                          DateFormat('hh:mm aa').format(dtTime).toString();
+
+                      sFbDocId = widget.sFbDocId;
+
+                      if (sStartDate.isEmpty && widget.sStartDate.isEmpty) {
+                        DateTime dtTime = DateTime.now();
+                        var receiveDate =
+                            DateFormat('dd MMM yyyy').format(dtTime).toString();
+                        sStartDate = receiveDate;
+
+                        var receiveRwDate =
+                            DateFormat('yyyy-MM-dd').format(dtTime).toString();
+                        sRwStDate = receiveRwDate;
+                      } else if (sStartDate.isEmpty) {
+                        sStartDate = widget.sStartDate;
+                      }
+
+                      if (sEndDate.isEmpty && widget.sEndDate.isEmpty) {
+                        var sFwdDate =
+                            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day + 1}';
+                        var initDate = DateTime.parse(sFwdDate);
+                        var receiveDate = DateFormat('dd MMM yyyy')
+                            .format(initDate)
+                            .toString();
+                        sEndDate = receiveDate;
+
+                        var receiveRwDate = DateFormat('yyyy-MM-dd')
+                            .format(initDate)
+                            .toString();
+                        sRwEdDate = receiveRwDate;
+                      } else if (sEndDate.isEmpty) {
+                        sEndDate = widget.sEndDate;
+                      }
+                      if (sRwStDate.isEmpty) {
+                        sRwStDate = widget.sRwStDate;
+                      }
+                      if (sRwEdDate.isEmpty) {
+                        sRwEdDate = widget.sRwEdDate;
+                      }
+
+                      // print(
+                      //     'checking sTitle ${contTitle.text} | widget sTitle ${widget.sTitle}');
+                      // print(
+                      //     'checking sStartDate ${sStartDate} | widget sStartDate ${widget.sStartDate}');
+                      // print(
+                      //     'checking sEndDate ${sEndDate} | widget sEndDate ${widget.sEndDate}');
+                      // print(
+                      //     'checking sTime ${receiveDate} | widget sTime ${widget.sTime}');
+                      // print(
+                      //     'checking sRwStDate ${sRwStDate} | widget sRwStDate ${widget.sRwStDate}');
+                      // print(
+                      //     'checking sRwEdDate ${sRwEdDate} | widget sRwEdDate ${widget.sRwEdDate}');
+                      // print(
+                      //     'checking sFbDocId ${sFbDocId} | widget sFbDocId ${widget.sFbDocId}');
+                      // setState(() {
+
+                      createUser(
+                          sTitle: contTitle.text,
+                          sStDate: sStartDate,
+                          sEdDate: sEndDate,
+                          sTime: receiveDate,
+                          sFbDocId: sFbDocId,
+                          sRawStDate: sRwStDate,
+                          sRawEdDate: sRwEdDate,
+                          isComplete: false);
+
+                      Navigator.of(context).pop();
+                     //    Navigator.pop(
+                     //      context,
+                     // 'returned'
+                     //    );
+                      // });
+                    },
+                  ),
                 ),
               ),
-            );
-          },
-        ),
-      ),
-    );
+            ),
+          ],
+        ));
   }
 }
 
@@ -271,6 +377,7 @@ class StartDateState extends State<StartDate> {
             flex: 1,
             child: Container(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   if (selectDate.isNotEmpty) ...[
                     Text(selectDate)
@@ -387,6 +494,7 @@ class EndDateState extends State<EndDate> {
             flex: 1,
             child: Container(
                 child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (selectDate.isNotEmpty) ...[
                   Text(selectDate)
@@ -468,7 +576,6 @@ Future createUser(
     required String sStDate,
     required String sEdDate,
     required String sTime,
-    required String sStatus,
     required String sFbDocId,
     required String sRawStDate,
     required String sRawEdDate,
@@ -498,7 +605,6 @@ Future createUser(
       sStartDate: sStDate,
       sEndDate: sEdDate,
       sTime: sTime,
-      sStatus: sStatus,
       sRawStDate: sRawStDate,
       sRawEdDate: sRawEdDate,
       bComplete: isComplete);
