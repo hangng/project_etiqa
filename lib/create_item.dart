@@ -4,13 +4,7 @@ import '../objects/dataObj.dart';
 import 'package:intl/intl.dart';
 
 class CreateItem extends StatefulWidget {
-  var sTitle = "",
-      sStartDate = "",
-      sEndDate = "",
-      sTime = "",
-      sFbDocId = "",
-      sRwStDate = "",
-      sRwEdDate = "";
+  var sTitle = "", sStartDate = "", sEndDate = "", sTime = "", sFbDocId = "", sRwStDate = "", sRwEdDate = "";
 
   // final int? startDate; // end date checking
   bool bIsEdit = false;
@@ -35,11 +29,7 @@ class CreateItemState extends State<CreateItem> {
   final TextEditingController contTitle = TextEditingController();
 
   int _yearOnly = 0;
-  String sStartDate = "",
-      sEndDate = "",
-      sFbDocId = "",
-      sRwStDate = "",
-      sRwEdDate = "";
+  String sStartDate = "", sEndDate = "", sFbDocId = "", sRwStDate = "", sRwEdDate = "";
 
   @override
   void initState() {
@@ -90,8 +80,7 @@ class CreateItemState extends State<CreateItem> {
           mainAxisSize: MainAxisSize.max,
           children: [
             Flexible(
-              child:
-              ListView(
+              child: ListView(
                 children: [
                   Container(
                     height: MediaQuery.of(context).size.height,
@@ -116,28 +105,20 @@ class CreateItemState extends State<CreateItem> {
                                   minHeight: 200,
                                 ),
                                 margin: EdgeInsets.only(top: 10),
-                                padding: EdgeInsets.only(
-                                    top: 10, left: 10, right: 10, bottom: 10),
+                                padding: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
                                 width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.blueAccent)),
+                                decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
                                 child: widget.bIsEdit
                                     ? TextField(
                                         controller: contTitle,
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText: 'is edit'),
+                                        decoration: new InputDecoration.collapsed(hintText: 'is edit'),
                                       )
                                     : TextField(
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText:
-                                                    'Please Enter Todo List'),
+                                        decoration: new InputDecoration.collapsed(hintText: 'Please Enter Todo List'),
                                         controller: contTitle,
                                       ),
                               ),
@@ -219,8 +200,7 @@ class CreateItemState extends State<CreateItem> {
                               content: const Text('Please enter To Do List'),
                               actions: <Widget>[
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
+                                  onPressed: () => Navigator.pop(context, 'Cancel'),
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
@@ -242,8 +222,7 @@ class CreateItemState extends State<CreateItem> {
                               content: const Text('Please enter To Do List'),
                               actions: <Widget>[
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
+                                  onPressed: () => Navigator.pop(context, 'Cancel'),
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
@@ -259,36 +238,28 @@ class CreateItemState extends State<CreateItem> {
                       }
 
                       DateTime dtTime = DateTime.now();
-                      var receiveDate =
-                          DateFormat('hh:mm aa').format(dtTime).toString();
+                      var receiveDate = DateFormat('hh:mm aa').format(dtTime).toString();
 
                       sFbDocId = widget.sFbDocId;
 
                       if (sStartDate.isEmpty && widget.sStartDate.isEmpty) {
                         DateTime dtTime = DateTime.now();
-                        var receiveDate =
-                            DateFormat('dd MMM yyyy').format(dtTime).toString();
+                        var receiveDate = DateFormat('dd MMM yyyy').format(dtTime).toString();
                         sStartDate = receiveDate;
 
-                        var receiveRwDate =
-                            DateFormat('yyyy-MM-dd').format(dtTime).toString();
+                        var receiveRwDate = DateFormat('yyyy-MM-dd').format(dtTime).toString();
                         sRwStDate = receiveRwDate;
                       } else if (sStartDate.isEmpty) {
                         sStartDate = widget.sStartDate;
                       }
 
                       if (sEndDate.isEmpty && widget.sEndDate.isEmpty) {
-                        var sFwdDate =
-                            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day + 1}';
+                        var sFwdDate = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day + 1}';
                         var initDate = DateTime.parse(sFwdDate);
-                        var receiveDate = DateFormat('dd MMM yyyy')
-                            .format(initDate)
-                            .toString();
+                        var receiveDate = DateFormat('dd MMM yyyy').format(initDate).toString();
                         sEndDate = receiveDate;
 
-                        var receiveRwDate = DateFormat('yyyy-MM-dd')
-                            .format(initDate)
-                            .toString();
+                        var receiveRwDate = DateFormat('yyyy-MM-dd').format(initDate).toString();
                         sRwEdDate = receiveRwDate;
                       } else if (sEndDate.isEmpty) {
                         sEndDate = widget.sEndDate;
@@ -317,20 +288,13 @@ class CreateItemState extends State<CreateItem> {
                       // setState(() {
 
                       createUser(
-                          sTitle: contTitle.text,
-                          sStDate: sStartDate,
-                          sEdDate: sEndDate,
-                          sTime: receiveDate,
-                          sFbDocId: sFbDocId,
-                          sRawStDate: sRwStDate,
-                          sRawEdDate: sRwEdDate,
-                          isComplete: false);
+                          sTitle: contTitle.text, sStDate: sStartDate, sEdDate: sEndDate, sTime: receiveDate, sFbDocId: sFbDocId, sRawStDate: sRwStDate, sRawEdDate: sRwEdDate, isComplete: false);
 
                       Navigator.of(context).pop();
-                     //    Navigator.pop(
-                     //      context,
-                     // 'returned'
-                     //    );
+                      //    Navigator.pop(
+                      //      context,
+                      // 'returned'
+                      //    );
                       // });
                     },
                   ),
@@ -343,12 +307,7 @@ class CreateItemState extends State<CreateItem> {
 }
 
 class StartDate extends StatefulWidget {
-  StartDate(
-      {super.key,
-      required this.customFeature,
-      required this.isEdit,
-      required this.sRwDate,
-      required this.sDisplayDate});
+  StartDate({super.key, required this.customFeature, required this.isEdit, required this.sRwDate, required this.sDisplayDate});
 
   final customFeature;
   final sDisplayDate;
@@ -379,13 +338,7 @@ class StartDateState extends State<StartDate> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (selectDate.isNotEmpty) ...[
-                    Text(selectDate)
-                  ] else if (widget.isEdit) ...[
-                    Text(widget.sDisplayDate)
-                  ] else ...[
-                    Text('Select a date')
-                  ]
+                  if (selectDate.isNotEmpty) ...[Text(selectDate)] else if (widget.isEdit) ...[Text(widget.sDisplayDate)] else ...[Text('Select a date')]
                 ],
               ),
             ),
@@ -406,21 +359,14 @@ class StartDateState extends State<StartDate> {
                     initDate = DateTime.now();
                     initLastDate = DateTime.now().year + 100;
                   }
-                  showDatePicker(
-                          context: context,
-                          initialDate: initDate,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(initLastDate))
-                      .then((value) {
+                  showDatePicker(context: context, initialDate: initDate, firstDate: DateTime.now(), lastDate: DateTime(initLastDate)).then((value) {
                     setState(() {
                       _dateTime = value!;
                       processDate(_dateTime); // sent to list
 
                       // for display in same field only
-                      final receiveStartDate =
-                          DateTime.parse(_dateTime.toString());
-                      final receiveDate =
-                          DateFormat('dd MMM yyyy').format(receiveStartDate);
+                      final receiveStartDate = DateTime.parse(_dateTime.toString());
+                      final receiveDate = DateFormat('dd MMM yyyy').format(receiveStartDate);
                       print('select date == ${receiveDate}');
                       selectDate = receiveDate;
                     });
@@ -437,14 +383,21 @@ class StartDateState extends State<StartDate> {
   void processDate(DateTime dateTime) {
     final receiveDate;
     var dateDayFormat;
+    var dateMonthFormat;
     if (dateTime.toString().isNotEmpty) {
       dateDayFormat = dateTime.day.toString();
+      dateMonthFormat = dateTime.month.toString();
       if (dateTime.day < 10) {
         dateDayFormat = "0$dateDayFormat";
       } else {
         dateDayFormat = dateTime.day;
       }
-      var rawDate = '${dateTime.year}-${dateTime.month}-${dateDayFormat}';
+      if (dateTime.month < 10) {
+        dateMonthFormat = "0$dateMonthFormat";
+      } else {
+        dateMonthFormat = dateTime.month;
+      }
+      var rawDate = '${dateTime.year}-${dateMonthFormat}-${dateDayFormat}';
 
       final receiveStartDate = DateTime.parse(rawDate);
       receiveDate = DateFormat('dd MMM yyyy').format(receiveStartDate);
@@ -453,18 +406,12 @@ class StartDateState extends State<StartDate> {
       dateDayFormat = "";
     }
     // print("receive data ===== ${receiveDate}");
-    widget.customFeature(dateTime.year, dateTime.month, dateDayFormat);
+    widget.customFeature(dateTime.year, dateMonthFormat, dateDayFormat);
   }
 }
 
 class EndDate extends StatefulWidget {
-  EndDate(
-      {super.key,
-      required this.customFeature,
-      required this.sStartYear,
-      required this.sDisplayDate,
-      required this.sRawDate,
-      required this.isEdit});
+  EndDate({super.key, required this.customFeature, required this.sStartYear, required this.sDisplayDate, required this.sRawDate, required this.isEdit});
 
   final customFeature;
   bool isEdit;
@@ -496,13 +443,7 @@ class EndDateState extends State<EndDate> {
                 child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (selectDate.isNotEmpty) ...[
-                  Text(selectDate)
-                ] else if (widget.isEdit) ...[
-                  Text(widget.sDisplayDate)
-                ] else ...[
-                  Text('Select a date')
-                ]
+                if (selectDate.isNotEmpty) ...[Text(selectDate)] else if (widget.isEdit) ...[Text(widget.sDisplayDate)] else ...[Text('Select a date')]
               ],
             )),
           ),
@@ -520,22 +461,15 @@ class EndDateState extends State<EndDate> {
                     initDate = DateTime.now();
                     lastDate = DateTime.now().year + 100;
                   }
-                  showDatePicker(
-                          context: context,
-                          initialDate: initDate,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(lastDate))
-                      .then((value) {
+                  showDatePicker(context: context, initialDate: initDate, firstDate: DateTime.now(), lastDate: DateTime(lastDate)).then((value) {
                     setState(() {
+                      print('select value == ${value}');
                       _dateTime = value!;
                       processDate(_dateTime); // sent to list
-
                       // for display in same field only
-                      final receiveStartDate =
-                          DateTime.parse(_dateTime.toString());
-                      final receiveDate =
-                          DateFormat('dd MMM yyyy').format(receiveStartDate);
-                      print('select date == ${receiveDate}');
+                      final receiveStartDate = DateTime.parse(_dateTime.toString());
+                      final receiveDate = DateFormat('dd MMM yyyy').format(receiveStartDate);
+
                       selectDate = receiveDate;
                     });
                   });
@@ -551,6 +485,7 @@ class EndDateState extends State<EndDate> {
   void processDate(DateTime dateTime) {
     var receiveDate;
     var dateDayFormat;
+    var dateMonthFormat;
 
     if (dateTime.toString().isNotEmpty) {
       dateDayFormat = dateTime.day.toString();
@@ -559,7 +494,16 @@ class EndDateState extends State<EndDate> {
       } else {
         dateDayFormat = dateTime.day;
       }
-      var rawDate = '${dateTime.year}-${dateTime.month}-${dateDayFormat}';
+
+      dateMonthFormat = dateTime.month.toString();
+      if (dateTime.month < 10) {
+        dateMonthFormat = "0$dateMonthFormat";
+      } else {
+        dateMonthFormat = dateMonthFormat;
+      }
+      var rawDate = '${dateTime.year}-${dateMonthFormat}-${dateDayFormat}';
+      print("checking rawDate == ${rawDate}");
+
       final receiveEndDate = DateTime.parse(rawDate);
       receiveDate = DateFormat('dd MMM yyyy').format(receiveEndDate);
     } else {
@@ -567,7 +511,7 @@ class EndDateState extends State<EndDate> {
       dateDayFormat = "";
     }
 
-    widget.customFeature(dateTime.year, dateTime.month, dateDayFormat);
+    widget.customFeature(dateTime.year, dateMonthFormat, dateDayFormat);
   }
 }
 
@@ -600,14 +544,7 @@ Future createUser(
   // specific object
   // final user = User(id: docUser.id, sName: name, iAge: 21);
   // final user = User(id: docUser.id, sName: name);
-  final user = IDataObj(
-      sTitle: sTitle,
-      sStartDate: sStDate,
-      sEndDate: sEdDate,
-      sTime: sTime,
-      sRawStDate: sRawStDate,
-      sRawEdDate: sRawEdDate,
-      bComplete: isComplete);
+  final user = IDataObj(sTitle: sTitle, sStartDate: sStDate, sEndDate: sEdDate, sTime: sTime, sRawStDate: sRawStDate, sRawEdDate: sRawEdDate, bComplete: isComplete);
 
   final json = user.toJson();
 

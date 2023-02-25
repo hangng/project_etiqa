@@ -209,13 +209,6 @@ class ItemInfoCardState extends State<ItemInfoCard> {
   @override
   void initState() {
     super.initState();
-    // Timer.periodic(Duration(seconds: 1), (timer) {
-    //   setState((){
-    //     print('checking time ${DateTime.now().second}');
-    //   });
-    //
-    // });
-
     isChecked = widget.bComplete;
   }
 
