@@ -55,6 +55,7 @@ class CreateItemState extends State<CreateItem> {
   void endDate(selectStartYear, selectStartMonth, selectStartDay) {
     setState(() {
       sEndDate = '$selectStartYear-$selectStartMonth-$selectStartDay';
+      print("checking sEndDate == ${sEndDate}");
       sRwEdDate = sEndDate;
       final receiveEndDate = DateTime.parse(sEndDate);
       sEndDate = DateFormat('dd MMM yyyy').format(receiveEndDate);
@@ -254,7 +255,16 @@ class CreateItemState extends State<CreateItem> {
                       }
 
                       if (sEndDate.isEmpty && widget.sEndDate.isEmpty) {
-                        var sFwdDate = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day + 1}';
+                        var dateMonthFormat;
+                        dateMonthFormat = DateTime.now().month.toString();
+                        if (DateTime.now().month < 10) {
+                          dateMonthFormat = "0$dateMonthFormat";
+                        } else {
+                          dateMonthFormat = dateMonthFormat;
+                        }
+
+
+                        var sFwdDate = '${DateTime.now().year}-${dateMonthFormat}-${DateTime.now().day + 1}';
                         var initDate = DateTime.parse(sFwdDate);
                         var receiveDate = DateFormat('dd MMM yyyy').format(initDate).toString();
                         sEndDate = receiveDate;

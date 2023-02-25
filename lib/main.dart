@@ -57,10 +57,8 @@ class ItemInfoLstState extends State<ItemInfoLst> {
 
   @override
   void initState() {
+    print("checking _user_user == ${_user}");
     super.initState();
-    // Timer.periodic(Duration(seconds: 1), (timer) {
-    //
-    // });
   }
 
   @override
@@ -102,7 +100,8 @@ class ItemInfoLstState extends State<ItemInfoLst> {
                                       sFbDocId: dsData.id,
                                       sRwStDate: dsData['rawStDate'],
                                       sRwEdDate: dsData['rawEdDate'],
-                                      bComplete: dsData['complete'])));
+                                      bComplete: dsData['complete'],
+                                  )));
                         },
                       );
                     } else {
