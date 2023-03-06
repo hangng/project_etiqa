@@ -114,7 +114,6 @@ class CreateItemState extends State<CreateItem> {
                                         controller: contTitle,
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
-                                        decoration: new InputDecoration.collapsed(hintText: 'is edit'),
                                       )
                                     : TextField(
                                         keyboardType: TextInputType.multiline,
@@ -197,7 +196,6 @@ class CreateItemState extends State<CreateItem> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Empty List Alert'),
                               content: const Text('Please enter To Do List'),
                               actions: <Widget>[
                                 TextButton(
@@ -219,7 +217,6 @@ class CreateItemState extends State<CreateItem> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Empty List Alert'),
                               content: const Text('Please enter To Do List'),
                               actions: <Widget>[
                                 TextButton(
@@ -263,7 +260,6 @@ class CreateItemState extends State<CreateItem> {
                           dateMonthFormat = dateMonthFormat;
                         }
 
-
                         var sFwdDate = '${DateTime.now().year}-${dateMonthFormat}-${DateTime.now().day + 1}';
                         var initDate = DateTime.parse(sFwdDate);
                         var receiveDate = DateFormat('dd MMM yyyy').format(initDate).toString();
@@ -281,31 +277,10 @@ class CreateItemState extends State<CreateItem> {
                         sRwEdDate = widget.sRwEdDate;
                       }
 
-                      // print(
-                      //     'checking sTitle ${contTitle.text} | widget sTitle ${widget.sTitle}');
-                      // print(
-                      //     'checking sStartDate ${sStartDate} | widget sStartDate ${widget.sStartDate}');
-                      // print(
-                      //     'checking sEndDate ${sEndDate} | widget sEndDate ${widget.sEndDate}');
-                      // print(
-                      //     'checking sTime ${receiveDate} | widget sTime ${widget.sTime}');
-                      // print(
-                      //     'checking sRwStDate ${sRwStDate} | widget sRwStDate ${widget.sRwStDate}');
-                      // print(
-                      //     'checking sRwEdDate ${sRwEdDate} | widget sRwEdDate ${widget.sRwEdDate}');
-                      // print(
-                      //     'checking sFbDocId ${sFbDocId} | widget sFbDocId ${widget.sFbDocId}');
-                      // setState(() {
-
+                      // print
                       createUser(
                           sTitle: contTitle.text, sStDate: sStartDate, sEdDate: sEndDate, sTime: receiveDate, sFbDocId: sFbDocId, sRawStDate: sRwStDate, sRawEdDate: sRwEdDate, isComplete: false);
-
                       Navigator.of(context).pop();
-                      //    Navigator.pop(
-                      //      context,
-                      // 'returned'
-                      //    );
-                      // });
                     },
                   ),
                 ),

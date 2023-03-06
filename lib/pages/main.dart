@@ -3,21 +3,25 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:maybank_etiqa/FirebaseFirestore.dart';
-import '../objects/dataObj.dart';
-import 'create_item.dart';
+import 'package:maybank_etiqa/research/FirebaseFirestore.dart';
+import '../../objects/dataObj.dart';
 import 'package:intl/intl.dart';
+
+import '../model/FirebaseModel.dart';
+import 'create_item.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final Future<FirebaseApp> _fbApp = Firebase.initializeApp();
-
   MyApp({Key? key}) : super(key: key);
+
+  Future<FirebaseApp> initFirebase() async {
+    var result = firebaseModel().fbApp;
+    return result;
+  }
 
   // This widget is the root of your application.
   @override
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(),
         home: FutureBuilder(
-          future: _fbApp,
+          future: initFirebase(),
           builder: (BuildContext context, AsyncSnapshot<FirebaseApp> snapshot) {
             if (snapshot.hasError) {
               print('Firebase Error !! ${snapshot.error.toString()}');
@@ -52,8 +56,7 @@ class ItemInfoLst extends StatefulWidget {
 class ItemInfoLstState extends State<ItemInfoLst> {
   List<IDataObj> dataLst = <IDataObj>[];
   late Timer time;
-  final CollectionReference _user =
-      FirebaseFirestore.instance.collection('users');
+  final CollectionReference _user = FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -72,73 +75,75 @@ class ItemInfoLstState extends State<ItemInfoLst> {
             style: TextStyle(color: Colors.black),
           ),
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Flexible(
-              child: Container(
-                color: Colors.grey[250],
-                child: StreamBuilder(
-                  // tell db return what kind of obj data
-                  stream: _user.snapshots(),
-                  builder:
-                      (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                    if (streamSnapshot.hasData) {
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: streamSnapshot.data!.docs.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final DocumentSnapshot dsData =
-                              streamSnapshot.data!.docs[index];
-                          return Container(
-                              child: Center(
-                                  child: ItemInfoCard(
-                                      sTitle: dsData['title'],
-                                      sStartDate: dsData['stDate'],
-                                      sEndDate: dsData['edDate'],
-                                      sTime: dsData['time'],
-                                      sFbDocId: dsData.id,
-                                      sRwStDate: dsData['rawStDate'],
-                                      sRwEdDate: dsData['rawEdDate'],
-                                      bComplete: dsData['complete'],
-                                  )));
-                        },
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            Container(
-              child: Align(
-                alignment: FractionalOffset.bottomCenter,
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomLeft,
+            colors: [Colors.redAccent, Colors.cyanAccent],
+          )),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Flexible(
                 child: Container(
-                  child: FloatingActionButton(
-                    backgroundColor: Colors.deepOrange,
-                    onPressed: () {
-                      _navigateAndDisplaySelection(context);
+                  color: Colors.grey[250],
+                  child: StreamBuilder(
+                    // tell db return what kind of obj data
+                    stream: _user.snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        return ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          itemCount: streamSnapshot.data!.docs.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final DocumentSnapshot dsData = streamSnapshot.data!.docs[index];
+                            return Container(
+                                child: Center(
+                                    child: ItemInfoCard(
+                              sTitle: dsData['title'],
+                              sStartDate: dsData['stDate'],
+                              sEndDate: dsData['edDate'],
+                              sTime: dsData['time'],
+                              sFbDocId: dsData.id,
+                              sRwStDate: dsData['rawStDate'],
+                              sRwEdDate: dsData['rawEdDate'],
+                              bComplete: dsData['complete'],
+                            )));
+                          },
+                        );
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
                     },
-                    tooltip: 'Increment',
-                    child: const Icon(Icons.add),
                   ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                child: Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: Container(
+                    child: FloatingActionButton(
+                      backgroundColor: Colors.deepOrange,
+                      onPressed: () {
+                        _navigateAndDisplaySelection(context);
+                      },
+                      tooltip: 'Increment',
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Stream<List<IDataObj>> readUsers() => FirebaseFirestore.instance
-      .collection('users')
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => IDataObj.fromJson(doc.data())).toList());
+  Stream<List<IDataObj>> readUsers() => FirebaseFirestore.instance.collection('users').snapshots().map((snapshot) => snapshot.docs.map((doc) => IDataObj.fromJson(doc.data())).toList());
 
   Future<void> _navigateAndDisplaySelection(BuildContext context) async {
     // Navigator.push returns a Future that completes after calling
@@ -261,13 +266,9 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                 TextButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(widget.sFbDocId)
-                          .delete();
+                      FirebaseFirestore.instance.collection('users').doc(widget.sFbDocId).delete();
 
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('You have successfully deleted a product ')));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You have successfully deleted a product ')));
                       Navigator.pop(context, 'OK');
                     }),
               ],
@@ -296,11 +297,12 @@ class ItemInfoCardState extends State<ItemInfoCard> {
         child: Wrap(
           children: [
             Container(
+              height: 100,
               padding: EdgeInsets.all(20),
               width: MediaQuery.of(context).size.width,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
+              child: ListView(
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisSize: MainAxisSize.max,
                 children: [
                   Container(
                     child: Text(
@@ -373,9 +375,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
               padding: EdgeInsets.only(left: 20),
               decoration: BoxDecoration(
                 color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(10.0),
-                    bottomLeft: Radius.circular(10.0)),
+                borderRadius: BorderRadius.only(bottomRight: Radius.circular(10.0), bottomLeft: Radius.circular(10.0)),
               ),
               width: MediaQuery.of(context).size.width,
               child: Row(
@@ -414,14 +414,10 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                       Container(
                         child: Checkbox(
                           checkColor: Colors.white,
-                          fillColor:
-                              MaterialStateProperty.resolveWith(getColor),
+                          fillColor: MaterialStateProperty.resolveWith(getColor),
                           value: isChecked,
                           onChanged: (bool? value) {
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(widget.sFbDocId)
-                                .update({"complete": value});
+                            FirebaseFirestore.instance.collection('users').doc(widget.sFbDocId).update({"complete": value});
 
                             print('id ===== ${widget.sFbDocId}');
 
