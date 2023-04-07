@@ -440,15 +440,17 @@ class EndDateState extends State<EndDate> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_drop_down),
                 onPressed: () {
-                  late var initDate, lastDate;
+                  late var initDate, lastDate, firstDate;
                   if (widget.isEdit) {
                     initDate = DateTime.parse(widget.sRawDate);
+                    firstDate = DateTime.parse(widget.sRawDate);
                     lastDate = DateTime.parse(widget.sRawDate).year + 100;
                   } else {
                     initDate = DateTime.now();
+                    firstDate = DateTime.now();
                     lastDate = DateTime.now().year + 100;
                   }
-                  showDatePicker(context: context, initialDate: initDate, firstDate: DateTime.now(), lastDate: DateTime(lastDate)).then((value) {
+                  showDatePicker(context: context, initialDate: initDate, firstDate: firstDate, lastDate: DateTime(lastDate)).then((value) {
                     setState(() {
                       print('select value == ${value}');
                       _dateTime = value!;
