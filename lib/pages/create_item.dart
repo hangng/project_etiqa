@@ -336,15 +336,17 @@ class StartDateState extends State<StartDate> {
                 onPressed: () {
                   FocusScope.of(context).unfocus();
 
-                  late var initDate, initLastDate;
+                  late var initDate, initLastDate, firstDate;
                   if (widget.isEdit) {
                     initDate = DateTime.parse(widget.sRwDate);
+                    firstDate = DateTime.parse(widget.sRwDate);
                     initLastDate = DateTime.parse(widget.sRwDate).year + 100;
                   } else {
                     initDate = DateTime.now();
+                    firstDate = DateTime.now();
                     initLastDate = DateTime.now().year + 100;
                   }
-                  showDatePicker(context: context, initialDate: initDate, firstDate: DateTime.now(), lastDate: DateTime(initLastDate)).then((value) {
+                  showDatePicker(context: context, initialDate: initDate, firstDate: firstDate, lastDate: DateTime(initLastDate)).then((value) {
                     setState(() {
                       _dateTime = value!;
                       processDate(_dateTime); // sent to list
